@@ -4,14 +4,14 @@ using Models.models;
 
 namespace BL.Services;
 
-public class BattleServiceService : IBattleService
+public class BattleService : IBattleService
 {
-    private ICreature? Player { get; }
-    private ICreature? Monster { get; }
+    private ICreature? Player { get; set; }
+    private ICreature? Monster { get; set; }
 
-    public BattleServiceService() {}
+    public BattleService() {}
     
-    public BattleServiceService(Player player, Monster monster)
+    public BattleService(Player player, Monster monster)
     {
         Player = player;
         Monster = monster;

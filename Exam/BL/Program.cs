@@ -12,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AppDbContext")));
-builder.Services.AddTransient<IBattleService, BattleServiceService>();
+builder.Services.AddTransient<IBattleService, BattleService>();
 
 var app = builder.Build();
 
