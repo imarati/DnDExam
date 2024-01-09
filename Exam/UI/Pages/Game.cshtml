@@ -4,8 +4,10 @@
 @using global::Models.models
 @model UI.Pages.Game
 
-@if (Model.Monster is null)
-{
+@{
+    var buttonDisabled = Model.Result is not null && Model.Result.Winner is Character.Monster? "disabled" : null; 
+}
+
     <div class="card">
         <div class="card-header">Edit your character</div>
         <form class="card-body" method="post">
@@ -18,10 +20,9 @@
                 @Html.ValidationMessage(property.Name, new { @class = "text text-danger" })
                 <br/>
             }
-            <input type="submit" class="btn btn-primary" value="Fight!"/>
+            <input disabled="@buttonDisabled" type="submit" class="btn btn-primary" value="Fight!"/>
         </form>
     </div>
-}    
 
 @if (Model.Monster is not null)
 {
@@ -59,7 +60,9 @@
             }
             else
             {
-                <div> @Model.Monster.Name </div> 
+                <div> @Model.Monster.Name </div>
+                <hr></hr>                          
+                <h1>Ваш персонаж мёртв!</h1>                       
             }
         </div>
 }
