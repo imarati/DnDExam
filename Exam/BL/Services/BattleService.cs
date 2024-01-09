@@ -113,4 +113,10 @@ public class BattleService : IBattleService
 
         return damage;
     }
+
+    public void SetOpponents(ICreature player, ICreature monster)
+    {
+        Player = player;
+        Monster = monster;
+    }
 }
