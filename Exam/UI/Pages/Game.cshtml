@@ -4,32 +4,41 @@
 @using global::Models.models
 @model UI.Pages.Game
 
-<div class="card">
-    <div class="card-header">Edit your character</div>
-    <form class="card-body" method="post">
-        @foreach (var property in typeof(Player).GetProperties())
-        {
-            @Html.Label(property.GetCustomAttributes(true)
-                .Select(a => (a as DisplayNameAttribute)?.DisplayName)
-                .FirstOrDefault(name => name is not null) ?? property.Name)
-            @Html.Editor(property.Name, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessage(property.Name, new { @class = "text text-danger" })
-            <br/>
-        }
-        <input type="submit" class="btn btn-primary" value="Fight!"/>
-    </form>
-</div>
+@if (Model.Monster is null)
+{
+    <div class="card">
+        <div class="card-header">Edit your character</div>
+        <form class="card-body" method="post">
+            @foreach (var property in typeof(Player).GetProperties())
+            {
+                @Html.Label(property.GetCustomAttributes(true)
+                    .Select(a => (a as DisplayNameAttribute)?.DisplayName)
+                    .FirstOrDefault(name => name is not null) ?? property.Name)
+                @Html.Editor(property.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage(property.Name, new { @class = "text text-danger" })
+                <br/>
+            }
+            <input type="submit" class="btn btn-primary" value="Fight!"/>
+        </form>
+    </div>
+}    
 
 @if (Model.Monster is not null)
 {
-    <div>monster hitpoints @Model.Monster.HitPoints</div>
-    <div> monster ac @Model.Monster.ArmorClass</div>
-    <div>monster damage mod @Model.Monster.DamageModifier</div>
+    <div>monster name: @Model.Monster.Name</div>
+    <div>monster hitpoints: @Model.Monster.HitPoints</div>
+    <div>monster attack mod: @Model.Monster.AttackModifier</div>
+    <div>monster attack per round: @Model.Monster.AttackPerRound</div>
+    <div>monster damage: @Model.Monster.Damage</div>
+    <div>monster damage mod: @Model.Monster.DamageModifier</div>
+    <div>monster ac: @Model.Monster.ArmorClass</div>
 }
 
 
 @if (Model.Result is not null)
 {
+    <hr>
+    
         @foreach (var action in Model.Result.Logs)
         {
             <h2>@action.CharacterName</h2>

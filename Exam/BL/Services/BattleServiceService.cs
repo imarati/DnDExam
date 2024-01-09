@@ -4,14 +4,14 @@ using Models.models;
 
 namespace BL.Services;
 
-public class Battle : IBattle
+public class BattleServiceService : IBattleService
 {
     private ICreature? Player { get; }
     private ICreature? Monster { get; }
 
-    public Battle() {}
+    public BattleServiceService() {}
     
-    public Battle(Player player, Monster monster)
+    public BattleServiceService(Player player, Monster monster)
     {
         Player = player;
         Monster = monster;
@@ -57,46 +57,60 @@ public class Battle : IBattle
         log.EnemyHp = new int[active.AttackPerRound];
         log.DiceRoll = new int[active.AttackPerRound];
         log.AttackModifier = active.AttackModifier;
+        
         for (var i = 0; i < active.AttackPerRound && passive.HitPoints > 0; i++)
         {
             var hitRoll = rnd.Next(1, 21);
             log.DiceRoll[i] = hitRoll;
             log.EnemyHp[i] = passive.HitPoints;
-            if (hitRoll == 1 || log.DiceRoll[i] + active.AttackModifier < passive.ArmorClass)
+            log.HitType[i] = AttackRoll(active.AttackModifier, passive.ArmorClass, hitRoll);
+            
+            if (log.HitType[i] == HitType.Miss)
             {
-                log.HitType[i] = HitType.Miss;
                 continue;
             }
-
-            if (hitRoll == 20)
-            {
-                log.HitType[i] = HitType.Critical;
-                
-                for (var _ = 0; _ < 2 * throws; _++)
-                    log.Damage[i] += (rnd.Next(1, dice + 1));
-
-                log.Damage[i] += active.DamageModifier;
-                passive.HitPoints -= Math.Min(passive.HitPoints, log.Damage[i]);
-                log.EnemyHp[i] = passive.HitPoints;
-                if (passive.HitPoints == 0) break;
-            }
-                
-
-            else
-            {
-                log.HitType[i] = HitType.Hit;
-                
-                for (var _ = 0; _ < throws; _++)
-                    log.Damage[i] += (rnd.Next(1, dice + 1));
-                log.Damage[i] += active.DamageModifier;
-                passive.HitPoints -= Math.Min(passive.HitPoints, log.Damage[i]);
-                log.EnemyHp[i] = passive.HitPoints;
-                if (passive.HitPoints == 0) break;
-            }
             
+            log.Damage[i] = DamageRoll(dice, throws, active.AttackModifier, log.HitType[i]);
+            passive.HitPoints -= Math.Min(passive.HitPoints, log.Damage[i]);
+            log.EnemyHp[i] = passive.HitPoints;
             
+            if (passive.HitPoints == 0) break;
         }
 
         return log;
+    }
+
+    private HitType AttackRoll(int AttackModifier, int ArmorClass, int hitRoll)
+    {
+        if (hitRoll == 1 || hitRoll + AttackModifier < ArmorClass)
+        {
+            return HitType.Miss;
+        }
+
+        else if (hitRoll == 20)
+        {
+            return HitType.Critical;
+        }
+        
+        return HitType.Hit;
+    }
+
+    private int DamageRoll(int dice, int throws, int damageModifier, HitType hitType)
+    {
+        var rnd = new Random();
+        int damage = 0;
+        
+        if (hitType == HitType.Critical)
+        {
+            throws *= 2;
+        }
+
+        for (var i = 0; i < throws; i++)
+        {
+            damage += (rnd.Next(1, dice + 1));
+        }
+        damage += damageModifier;
+
+        return damage;
     }
 }

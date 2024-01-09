@@ -2,7 +2,7 @@ using Models.dtos;
 
 namespace BL.Services;
 
-public interface IBattle
+public interface IBattleService
 {
     public ResultDto GetResult();
 }

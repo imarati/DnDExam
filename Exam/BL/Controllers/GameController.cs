@@ -8,16 +8,16 @@ namespace BL.Controllers;
 [Route("[controller]")]
 public class GameController
 {
-    private IBattle _battle;
+    private IBattleService _battleService;
 
-    public GameController(IBattle battle) => _battle = battle;
+    public GameController(IBattleService battleService) => _battleService = battleService;
 
     [HttpPost]
     [Route("fight")]
     public JsonResult Fight([FromBody] OpponentsDto opponents)
     {
-        _battle = new Battle(opponents.Player, opponents.Monster);
-        var result = _battle.GetResult();
+        _battleService = new BattleServiceService(opponents.Player, opponents.Monster);
+        var result = _battleService.GetResult();
         return new JsonResult(result);
     }
 }

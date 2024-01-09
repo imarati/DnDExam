@@ -18,7 +18,6 @@ public class Monster : ICreature
     public string Damage { get; set; }
     [Required]
     public int DamageModifier { get; set; }
-
     [Required]
     public int ArmorClass { get; set; }
 }
