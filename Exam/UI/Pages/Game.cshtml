@@ -1,0 +1,69 @@
+@page
+@using System.ComponentModel
+@using global::Models.dtos
+@using global::Models.models
+@model UI.Pages.Game
+
+@{
+    var buttonDisabled = Model.Result is not null && Model.Result.Winner is Character.Monster? "disabled" : null; 
+}
+
+    <div class="card">
+        <div class="card-header">Edit your character</div>
+        <form class="card-body" method="post">
+            @foreach (var property in typeof(Player).GetProperties())
+            {
+                @Html.Label(property.GetCustomAttributes(true)
+                    .Select(a => (a as DisplayNameAttribute)?.DisplayName)
+                    .FirstOrDefault(name => name is not null) ?? property.Name)
+                @Html.Editor(property.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessage(property.Name, new { @class = "text text-danger" })
+                <br/>
+            }
+            <input disabled="@buttonDisabled" type="submit" class="btn btn-primary" value="Fight!"/>
+        </form>
+    </div>
+
+@if (Model.Monster is not null)
+{
+    <div>monster name: @Model.Monster.Name</div>
+    <div>monster hit points: @Model.Monster.HitPoints</div>
+    <div>monster attack mod: @Model.Monster.AttackModifier</div>
+    <div>monster attack per round: @Model.Monster.AttackPerRound</div>
+    <div>monster damage: @Model.Monster.Damage</div>
+    <div>monster damage mod: @Model.Monster.DamageModifier</div>
+    <div>monster ac: @Model.Monster.ArmorClass</div>
+}
+
+
+@if (Model.Result is not null)
+{
+    <hr>
+    
+        @foreach (var action in Model.Result.Logs)
+        {
+            <h2>@action.CharacterName</h2>
+            @for (int i = 0; i < action.DiceRoll.Length; i++)
+            {
+                <div> d20 + attack modifier: @action.DiceRoll[i] + @action.AttackModifier</div> 
+                <div> @action.HitType[i] </div>
+                <div>Damage: @action.Damage[i] for @action.EnemyName</div>
+                <div>Enemy HP: @action.EnemyName (@action.EnemyHp[i])</div>  
+            }                                              
+        }
+        
+        <div>
+            Победил:
+            @if (Model.Result.Winner is Character.Player)
+            {
+                <div> @Model.Player.Name </div> 
+            }
+            else
+            {
+                <div> @Model.Monster.Name </div>
+                <hr></hr>                          
+                <h1>Ваш персонаж мёртв!</h1>                       
+            }
+        </div>
+}
+
