@@ -11,7 +11,7 @@ public class Game : PageModel
     private const string GameUrl = "https://localhost:7162/game/fight";
 
     [BindProperty] public Player Player { get; set; } = new();
-    public Monster? Monster { get; set; }
+    public Monster Monster { get; set; }
     public ResultDto? Result;
     
     public void OnGet() { }
